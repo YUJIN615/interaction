@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            background-color: #000;
+            overflow: hidden;
+        }
+
+        h1 {
+            color: #fff;
+        }
+
+        .cursor_item {
+            border-radius: 50%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1500;
+            /*mix-blend-mode: multiply;*/
+            opacity: .8;
+        }
+
+        .cursor_item .cursor_circle {
+            position: fixed;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: -40px 0 0 -40px;
+            background-color: yellowgreen;
+            transition: all .3s ease;
+        }
+
+        button {
+            padding: 20px 30px;
+            background: #fff;
+            color: red;
+            font-size: 24px;
+            font-weight: bold;
+            outline: 0;
+            border: 0;
+            transition: all .5s ease;
+        }
+
+        button:hover {
+            padding: 30px 40px;
+            background: red;
+            color: white;
+            font-size: 32px;
+            border-radius: 30px;
+        }
+
+        .human {
+            position: absolute;
+            left: calc(50% - 150px);
+            width: 200px;
+            z-index: 1000;
+            margin: 200px 0 0 0;
+        }
+
+        .bg {
+            position: absolute;
+            top: -100px;
+            left: -150px;
+            width: 130%;
+            height: auto;
+        }
+
+        .logo-box {
+            perspective: 300px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            margin: -100px 0 0 -400px;
+        }
+
+        .logo {
+            width: 850px;
+            height: auto;
+            transform: rotate3d(1, 1, 0, 10deg);
+            transition: all .5s ease;
+        }
+
+        .logo:hover {
+            transform: rotate3d(1, -1, 0, 10deg) scale(1.2);
+        }
+
+    </style>
+
+    <script>
+        let cursor_item;
+        let cursor_circle;
+        let h1;
+        let human
+        let bg
+        let logoBox
+        let logo
+
+        let x1= 0;
+        let y1 = 0;
+        let mx1 = 0;
+        let my1 = 0;
+        let speed1 = 0.08;
+
+        let x = 0;
+        let y = 0;
+        let mx = 0;
+        let my = 0;
+        let speed = 0.05;
+
+        let logoX = 0;
+        let logoY = 0;
+        let logoMx = 0;
+        let logoMy = 0;
+        let logoSpeed = 0.03;
+
+
+        window.onload = function () {
+            h1 = document.getElementsByTagName('h1')[0];
+            cursor_item = document.getElementsByClassName("cursor_item")[0];
+            cursor_circle = document.getElementsByClassName("cursor_circle")[0];
+            human = document.getElementsByClassName("human")[0];
+            bg = document.getElementsByClassName("bg")[0];
+            logoBox = document.getElementsByClassName('logo-box')[0];
+            logo = document.getElementsByClassName('logo')[0];
+
+            // 마우스 커서
+            window.addEventListener("mousemove", mouseMove, false);
+            function mouseMove(e) {
+                // 커서의 움직임
+                x1 = e.clientX;
+                y1 = e.clientY;
+
+                // 화면 너비의 반만 이동하게 하기
+                x = (e.clientX - window.innerWidth / 2);
+                y = (e.clientY - window.innerHeight / 2);
+
+                logoX = (e.clientX - window.innerWidth / 2);
+                logoY = (e.clientY - window.innerHeight / 2);
+            }
+
+            cursor_circle.addEventListener("mouseenter", function(e){
+                cursor_circle.style.transform = "scale(.5)";
+            })
+            cursor_circle.addEventListener("mouseout", function(e){
+                cursor_circle.style.transform = "scale(1)";
+            })
+
+            loop();
+            cursorLoop();
+            logoLoop();
+        }
+
+        function cursorLoop() {
+            mx1 += (x1 - mx1) * speed1;
+            my1 += (y1 - my1) * speed1;
+
+            cursor_item.style.transform = "translate("+ mx1 + "px," + my1 +"px)";
+
+            window.requestAnimationFrame(cursorLoop);
+        }
+
+        function loop () {
+            // 부드러운 움직임 구현
+            // 0에서 부터 마우스 위치까지 1씩 위치 증가
+            // 곱하기 값이 클수록 따라오는 속도 빨라짐
+            mx += (x - mx) * speed;
+            my += (y - my) * speed;
+
+            // 요소의 위치 변경
+            // 요소가 마우스 움직임과 반대로 움직이게 하려면 - 값을 준다.
+            // 요소가 더 조금만 움직이게 하려면 mx 값을 나누어준다.
+            human.style.transform = "translate("+ -(mx/12) + "px," + -(my/12) +"px)";
+            bg.style.transform = "translate("+ (mx/6) + "px," + (my/6) +"px)";
+
+            // 애니메이션 구현. 1초에 60번 동작.
+            window.requestAnimationFrame(loop);
+
+            //h1.innerHTML = "x: " + x + " mx:" + mx;
+        }
+
+        function logoLoop() {
+            logoMx += (logoX - logoMx) * logoSpeed;
+            logoMy += (logoY - logoMy) * logoSpeed;
+
+            logoBox.style.transform = "translate("+ (logoMx/10) + "px," + (logoMy/10) +"px)";
+
+            window.requestAnimationFrame(logoLoop);
+        }
+    </script>
+
+</head>
+<body>
+<!--    <h1>TEST</h1>-->
+<!--    <button>START</button>-->
+    <img src="images/base.jpg" alt="배경" class="bg">
+    <div class="logo-box">
+        <img src="images/masthead-logo.svg" alt="로고" class="logo">
+    </div>
+    <img src="images/model.png" alt="모델" class="human">
+    <div class="cursor_item">
+        <span class="cursor_circle"></span>
+    </div>
+</body>
+</html>
